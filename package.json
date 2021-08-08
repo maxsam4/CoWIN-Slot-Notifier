@@ -6,6 +6,7 @@
   "author": "Mudit Gupta <guptamudit@ymail.com>",
   "license": "MIT",
   "dependencies": {
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "telegraf": "^4.4.1"
   }
 }

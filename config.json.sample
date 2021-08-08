@@ -1,0 +1,8 @@
+{
+    "districts": [140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150],
+    "vaccine": "Sputnik",
+    "dose": 2,
+    "age": 45,
+    "telegram_bot_token": "",
+    "telegram_chat_id": 1
+}
