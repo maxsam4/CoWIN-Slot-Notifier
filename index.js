@@ -2,6 +2,7 @@ const config = require("./config.json");
 const request = require("request");
 const baseUrl = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?";
 const { Telegraf } = require("telegraf");
+const sessionsNotified = new Map();
 
 let bot;
 let districtToProcess = 0;
@@ -24,8 +25,10 @@ async function main() {
 }
 
 function processDistrict() {
-  const requestUrl = baseUrl + "district_id=" + config.districts[districtToProcess] + "&date=" + getDate();
-  console.log("Checking district", config.districts[districtToProcess]);
+  const districtId = districtToProcess % config.districts.length;
+  const requestUrl = baseUrl + "district_id=" + config.districts[districtId] + "&date=" + getDate();
+  console.log("Checking district", config.districts[districtId]);
+
   request(requestUrl, { json: true }, (err, res, body) => {
     if (err) {
       return console.log(err);
@@ -45,11 +48,12 @@ function processDistrict() {
           console.log(availableSlots + " slots available on " + session.date);
           console.log(session.slots);
 
-          if (bot && config.telegram_chat_id) {
+          if (bot && config.telegram_chat_id && !sessionsNotified.has(session.session_id)) {
             bot.telegram.sendMessage(
               config.telegram_chat_id,
               `Found ${availableSlots} slots on ${session.date} at ${center.name}, ${center.district_name}, ${center.state_name} - ${center.pincode}`
             );
+            sessionsNotified.set(session.session_id, true);
           }
         }
       });
@@ -57,9 +61,6 @@ function processDistrict() {
   });
 
   districtToProcess++;
-  if (districtToProcess >= config.districts.length) {
-    districtToProcess = 0;
-  }
 }
 
 function getDate() {
